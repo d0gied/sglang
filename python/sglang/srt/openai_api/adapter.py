@@ -67,6 +67,8 @@ from sglang.srt.openai_api.protocol import (
     FunctionResponse,
     LogProbs,
     MultimodalEmbeddingInput,
+    TokenizeRequest,
+    TokenizeResponse,
     ToolCall,
     TopLogprob,
     UsageInfo,
@@ -713,6 +715,20 @@ def v1_generate_response(
         )
     return response
 
+async def v1_tokenize(tokenizer_manager, raw_request: Request):
+    request_json: dict = await raw_request.json()
+    request = TokenizeRequest(**request_json)
+    input_ids: list[int]
+
+    if request.prompt:
+        input_ids = tokenizer_manager.tokenizer.encode(request.prompt)
+    elif request.messages:
+        input_ids = tokenizer_manager.tokenizer.apply_chat_template(request.messages)
+    else:
+        input_ids = []
+    
+    return TokenizeResponse(count=len(input_ids), max_model_len=0, tokens=input_ids)
+    
 
 async def v1_completions(tokenizer_manager, raw_request: Request):
     request_json = await raw_request.json()

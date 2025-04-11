@@ -183,6 +183,16 @@ class CompletionRequest(BaseModel):
     lora_path: Optional[Union[List[Optional[str]], Optional[str]]] = None
     session_params: Optional[Dict] = None
 
+class TokenizeRequest(BaseModel):
+    model: str
+    prompt: str | None = None
+    messages: "list[ChatCompletionMessageParam] | None" = None
+
+class TokenizeResponse(BaseModel):
+    count: int
+    max_model_len: int
+    tokens: list[int]
+
 
 class CompletionResponseChoice(BaseModel):
     index: int
